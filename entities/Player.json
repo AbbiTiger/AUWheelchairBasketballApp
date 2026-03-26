@@ -1,0 +1,36 @@
+{
+  "name": "Player",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Player full name"
+    },
+    "number": {
+      "type": "number",
+      "description": "Jersey number"
+    },
+    "classification": {
+      "type": "number",
+      "description": "Wheelchair basketball classification (1.0 - 4.5)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "bench"
+      ],
+      "default": "bench",
+      "description": "Current player status"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Player photo URL"
+    }
+  },
+  "required": [
+    "name",
+    "number",
+    "classification"
+  ]
+}

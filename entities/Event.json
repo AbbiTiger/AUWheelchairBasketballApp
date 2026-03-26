@@ -1,0 +1,85 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event occurred"
+    },
+    "player_id": {
+      "type": "string",
+      "description": "Reference to Player"
+    },
+    "game_id": {
+      "type": "string",
+      "description": "Reference to Game"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "made_2pt",
+        "missed_2pt",
+        "made_3pt",
+        "missed_3pt",
+        "ft_made",
+        "ft_missed",
+        "orb",
+        "drb",
+        "ast",
+        "stl",
+        "to",
+        "foul",
+        "bs",
+        "tech",
+        "opp_made_2pt",
+        "opp_missed_2pt",
+        "opp_made_3pt",
+        "opp_missed_3pt"
+      ],
+      "description": "Type of basketball action"
+    },
+    "points": {
+      "type": "number",
+      "default": 0
+    },
+    "lineup_on_court": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shot_x": {
+      "type": "number"
+    },
+    "shot_y": {
+      "type": "number"
+    },
+    "shot_zone": {
+      "type": "string",
+      "enum": [
+        "paint",
+        "mid_left",
+        "mid_right",
+        "mid_center",
+        "corner_left",
+        "corner_right",
+        "wing_left",
+        "wing_right",
+        "top_key",
+        "three_left",
+        "three_right",
+        "three_center"
+      ]
+    },
+    "is_opponent": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "player_id",
+    "game_id",
+    "action_type"
+  ]
+}

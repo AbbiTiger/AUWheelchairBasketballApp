@@ -1,0 +1,58 @@
+{
+  "name": "Game",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Game date"
+    },
+    "opponent": {
+      "type": "string",
+      "description": "Opponent team name"
+    },
+    "location": {
+      "type": "string",
+      "description": "Game location/venue"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "live",
+        "completed"
+      ],
+      "default": "upcoming"
+    },
+    "our_score": {
+      "type": "number",
+      "default": 0
+    },
+    "opponent_score": {
+      "type": "number",
+      "default": 0
+    },
+    "opponent_players": {
+      "type": "array",
+      "description": "Optional list of opponent players for stat tracking",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "number": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "date",
+    "opponent"
+  ]
+}
