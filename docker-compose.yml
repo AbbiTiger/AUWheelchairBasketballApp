@@ -9,13 +9,14 @@ services:
     ports:
       - "7071:7071"
     environment:
-      COSMOS_CONNECTION_STRING: ${COSMOS_CONNECTION_STRING}
-      COSMOS_DATABASE: apex
-      AzureWebJobsStorage: UseDevelopmentStorage=true
+      PORT: 7071
+      DB_PATH: /app/data/apex.db
+    volumes:
+      - api-data:/app/data
     networks:
       - apex-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7071/api/games"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7071/api/health"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -34,6 +35,9 @@ services:
         condition: service_healthy
     networks:
       - apex-network
+
+volumes:
+  api-data:
 
 networks:
   apex-network:

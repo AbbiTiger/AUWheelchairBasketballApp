@@ -7,83 +7,54 @@ fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
+db.pragma("foreign_keys = ON");
 
+// ─── Schema ────────────────────────────────────────────────────────────────
 db.exec(`
-  CREATE TABLE IF NOT EXISTS games   (id TEXT PRIMARY KEY, data TEXT NOT NULL);
-  CREATE TABLE IF NOT EXISTS players (id TEXT PRIMARY KEY, data TEXT NOT NULL);
-  CREATE TABLE IF NOT EXISTS events  (id TEXT PRIMARY KEY, game_id TEXT, data TEXT NOT NULL);
+  CREATE TABLE IF NOT EXISTS players (
+    id              TEXT PRIMARY KEY,
+    name            TEXT NOT NULL,
+    number          TEXT NOT NULL,
+    classification  REAL NOT NULL DEFAULT 1.0,
+    status          TEXT NOT NULL DEFAULT 'bench',
+    position        TEXT,
+    photo_url       TEXT,
+    created_date    TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS games (
+    id              TEXT PRIMARY KEY,
+    date            TEXT NOT NULL,
+    opponent        TEXT NOT NULL,
+    location        TEXT,
+    status          TEXT NOT NULL DEFAULT 'upcoming',
+    our_score       INTEGER NOT NULL DEFAULT 0,
+    opponent_score  INTEGER NOT NULL DEFAULT 0,
+    opponent_players TEXT,
+    created_date    TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS events (
+    id              TEXT PRIMARY KEY,
+    timestamp       TEXT NOT NULL,
+    player_id       TEXT NOT NULL,
+    game_id         TEXT NOT NULL,
+    action_type     TEXT NOT NULL,
+    points          INTEGER NOT NULL DEFAULT 0,
+    lineup_on_court TEXT,
+    shot_x          REAL,
+    shot_y          REAL,
+    shot_zone       TEXT,
+    is_opponent     INTEGER NOT NULL DEFAULT 0,
+    created_date    TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_events_game_id    ON events(game_id);
+  CREATE INDEX IF NOT EXISTS idx_events_player_id  ON events(player_id);
+  CREATE INDEX IF NOT EXISTS idx_events_action     ON events(action_type);
+  CREATE INDEX IF NOT EXISTS idx_games_status       ON games(status);
+  CREATE INDEX IF NOT EXISTS idx_games_date         ON games(date);
 `);
 
-// ─── Cosmos-compatible shim ────────────────────────────────────────────────
-// All methods return plain objects (not Promises), but the callers use
-// `await` which safely resolves immediately on non-Promise values.
-
-function getContainer(name) {
-  const table = name; // "games" | "players" | "events"
-
-  return {
-    items: {
-      readAll() {
-        return {
-          fetchAll() {
-            const rows = db.prepare(`SELECT data FROM ${table}`).all();
-            return { resources: rows.map((r) => JSON.parse(r.data)) };
-          },
-        };
-      },
-
-      create(item) {
-        if (table === "events") {
-          db.prepare("INSERT INTO events (id, game_id, data) VALUES (?, ?, ?)")
-            .run(item.id, item.game_id ?? null, JSON.stringify(item));
-        } else {
-          db.prepare(`INSERT INTO ${table} (id, data) VALUES (?, ?)`)
-            .run(item.id, JSON.stringify(item));
-        }
-        return { resource: item };
-      },
-
-      // Only used by events GET-one and events DELETE
-      query(q) {
-        return {
-          fetchAll() {
-            const idParam = q.parameters?.find((p) => p.name === "@id")?.value;
-            if (idParam) {
-              const row = db.prepare(`SELECT data FROM ${table} WHERE id = ?`).get(idParam);
-              return { resources: row ? [JSON.parse(row.data)] : [] };
-            }
-            const rows = db.prepare(`SELECT data FROM ${table}`).all();
-            return { resources: rows.map((r) => JSON.parse(r.data)) };
-          },
-        };
-      },
-    },
-
-    item(id /*, _partitionKey */) {
-      return {
-        read() {
-          const row = db.prepare(`SELECT data FROM ${table} WHERE id = ?`).get(id);
-          return { resource: row ? JSON.parse(row.data) : null };
-        },
-
-        replace(updated) {
-          if (table === "events") {
-            db.prepare("UPDATE events SET game_id = ?, data = ? WHERE id = ?")
-              .run(updated.game_id ?? null, JSON.stringify(updated), id);
-          } else {
-            db.prepare(`UPDATE ${table} SET data = ? WHERE id = ?`)
-              .run(JSON.stringify(updated), id);
-          }
-          return { resource: updated };
-        },
-
-        delete() {
-          db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(id);
-          return {};
-        },
-      };
-    },
-  };
-}
-
-module.exports = { getContainer };
+module.exports = db;

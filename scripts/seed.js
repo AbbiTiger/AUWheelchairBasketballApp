@@ -2,11 +2,11 @@
 /**
  * scripts/seed.js
  *
- * Creates realistic test data against your local Azure Functions API.
+ * Creates realistic test data against your local API.
  * Run with:  node scripts/seed.js
  *
  * Prerequisites:
- *   - func start --script-root api --port 7071   (running in another terminal)
+ *   - cd api && npm start   (running in another terminal)
  */
 
 const BASE = "http://localhost:7071/api";
@@ -71,12 +71,12 @@ function buildEvents(gameId, playerIds, lineupIds) {
     { action_type: "missed_2pt", points: 0 },
     { action_type: "made_3pt",   points: 3 },
     { action_type: "missed_3pt", points: 0 },
-    { action_type: "made_ft",    points: 1 },
-    { action_type: "missed_ft",  points: 0 },
-    { action_type: "assist",     points: 0 },
-    { action_type: "rebound",    points: 0 },
-    { action_type: "turnover",   points: 0 },
-    { action_type: "steal",      points: 0 },
+    { action_type: "ft_made",    points: 1 },
+    { action_type: "ft_missed",  points: 0 },
+    { action_type: "ast",        points: 0 },
+    { action_type: "drb",        points: 0 },
+    { action_type: "to",         points: 0 },
+    { action_type: "stl",        points: 0 },
   ];
 
   const shotZones = ["paint", "wing_left", "wing_right", "three_center", "three_left", "three_right", "mid_center"];
@@ -192,6 +192,6 @@ async function main() {
 
 main().catch(err => {
   console.error("\n❌ Seed failed:", err.message);
-  console.error("Make sure the API is running: func start --script-root api --port 7071");
+  console.error("Make sure the API is running: cd api && npm start");
   process.exit(1);
 });

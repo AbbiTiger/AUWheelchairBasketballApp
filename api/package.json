@@ -1,14 +1,16 @@
 {
   "name": "apex-api",
   "version": "1.0.0",
-  "description": "APEX Azure Functions API",
+  "description": "COURTSIDE API — Express + SQLite",
   "main": "src/functions/index.js",
   "scripts": {
-    "start": "func start"
+    "start": "node src/functions/index.js",
+    "dev": "node --watch src/functions/index.js"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0",
     "better-sqlite3": "^12.8.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
     "uuid": "^9.0.0"
   }
 }

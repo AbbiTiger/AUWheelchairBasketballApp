@@ -1,15 +1,20 @@
-# Azure Functions API
-FROM mcr.microsoft.com/azure-functions/node:4-node20
+# Express + SQLite API
+FROM node:20-alpine
 
-ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
-    AzureFunctionsJobHost__Logging__Console__IsEnabled=true \
-    FUNCTIONS_WORKER_RUNTIME=node
+RUN apk add --no-cache python3 make g++
 
-WORKDIR /home/site/wwwroot
+WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY . .
 
+RUN mkdir -p /app/data
+
+ENV PORT=7071
+ENV DB_PATH=/app/data/apex.db
+
 EXPOSE 7071
+
+CMD ["node", "src/functions/index.js"]
