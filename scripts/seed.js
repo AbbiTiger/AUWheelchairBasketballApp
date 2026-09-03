@@ -44,13 +44,13 @@ function ts(minutesAgo) {
 
 // ─── roster ─────────────────────────────────────────────────────────────────
 const PLAYERS = [
-  { name: "Jordan Mercer",   number: "4",  classification: 3.5, status: "active",  position: "Forward" },
-  { name: "Sam Rivera",      number: "10", classification: 2.0, status: "active",  position: "Guard" },
-  { name: "Taylor Brooks",   number: "22", classification: 1.0, status: "active",  position: "Guard" },
-  { name: "Alex Nguyen",     number: "7",  classification: 3.0, status: "active",  position: "Center" },
-  { name: "Morgan Lee",      number: "15", classification: 2.5, status: "active",  position: "Forward" },
-  { name: "Casey Kim",       number: "3",  classification: 1.5, status: "bench",   position: "Guard" },
-  { name: "Riley Hassan",    number: "11", classification: 2.0, status: "bench",   position: "Forward" },
+  { name: "Player 1", number: "4",  classification: 3.5, status: "active", position: "Forward" },
+  { name: "Player 2", number: "10", classification: 2.0, status: "active", position: "Guard" },
+  { name: "Player 3", number: "22", classification: 1.0, status: "active", position: "Guard" },
+  { name: "Player 4", number: "7",  classification: 3.0, status: "active", position: "Center" },
+  { name: "Player 5", number: "15", classification: 2.5, status: "active", position: "Forward" },
+  { name: "Player 6", number: "3",  classification: 1.5, status: "bench",  position: "Guard" },
+  { name: "Player 7", number: "11", classification: 2.0, status: "bench",  position: "Forward" },
 ];
 
 // ─── games ───────────────────────────────────────────────────────────────────
@@ -155,9 +155,9 @@ async function main() {
     const game = await post("/games", {
       ...g,
       opponent_players: [
-        { id: `opp_1_${Date.now()}`, name: "Smith", number: "5" },
-        { id: `opp_2_${Date.now()}`, name: "Jones", number: "12" },
-        { id: `opp_3_${Date.now()}`, name: "Williams", number: "33" },
+        { id: `opp_1_${Date.now()}`, name: "Opponent 1", number: "5" },
+        { id: `opp_2_${Date.now()}`, name: "Opponent 2", number: "12" },
+        { id: `opp_3_${Date.now()}`, name: "Opponent 3", number: "33" },
       ],
     });
     createdGames.push(game);

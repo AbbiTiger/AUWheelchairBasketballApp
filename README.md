@@ -1,227 +1,154 @@
-# COURTSIDE — AU Wheelchair Basketball Stats App
+<div align="center">
+  <img src="default.png" alt="Auburn wheelchair basketball mascot spinning a basketball" width="220" />
 
-Real-time stat tracking and analytics platform for Auburn University's wheelchair basketball program. Built for courtside use by coaches during live games.
+  # COURTSIDE
 
-## Features
+  **Live stats for Auburn wheelchair basketball.**
 
-- **Live Game Tracking** — Tap the court to record shots (with x/y coordinates and zone), log assists, rebounds, steals, turnovers, blocks, fouls, and free throws in real time
-- **Shot Chart** — Visual court map showing made/missed shots by zone for both teams
-- **Lineup Management** — Track 5-on-court with classification sum enforcement (14.0 max per IWBF rules), handle substitutions
-- **Opponent Tracking** — Record opponent shot attempts and scores
-- **Box Score** — Per-game stat breakdown for all players
-- **Season Averages** — Aggregated stats across all completed games
-- **Player Profiles** — Individual career stats, shooting charts, and recruiting export
-- **PDF Export** — Generate printable game reports with shot charts and box scores
-- **Dashboard** — KPI cards and shooting trend charts for post-game analysis
+  Track a game from the sideline, manage lineups, map every shot, and turn the final buzzer into a box score before the chairs leave the court.
 
-## Tech Stack
+  ![React](https://img.shields.io/badge/React-18-0b1f3a?style=flat-square&logo=react&logoColor=61DAFB)
+  ![Vite](https://img.shields.io/badge/Vite-6-f26522?style=flat-square&logo=vite&logoColor=white)
+  ![Express](https://img.shields.io/badge/Express-Node_20-0b1f3a?style=flat-square&logo=express&logoColor=white)
+  ![SQLite](https://img.shields.io/badge/SQLite-WAL-f26522?style=flat-square&logo=sqlite&logoColor=white)
+</div>
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Vite 6, Tailwind CSS 3, shadcn/ui (Radix) |
-| Data Fetching | TanStack React Query v5 |
-| Charts | Recharts |
-| PDF | jsPDF + html2canvas |
-| API | Express.js (Node 20) |
-| Database | SQLite via better-sqlite3 (WAL mode) |
-| Deployment | Docker Compose (Nginx + Express) |
+---
 
-## Project Structure
+## Built for courtside work
 
-```
-├── src/                    # React frontend
-│   ├── api/apiClient.js    # API client (fetch wrapper)
-│   ├── pages/              # Route pages
-│   │   ├── LiveGame.jsx    # Core stat-tracking interface
-│   │   ├── Dashboard.jsx   # Post-game analytics
-│   │   ├── Games.jsx       # Schedule management
-│   │   ├── GameDetail.jsx  # Single-game deep dive
-│   │   ├── BoxScore.jsx    # Per-game box score
-│   │   ├── Players.jsx     # Roster CRUD
-│   │   ├── PlayerDetail.jsx # Player career stats
-│   │   ├── SeasonAverages.jsx # Season-wide stats
-│   │   └── RecruitingProfile.jsx # Shareable player card
-│   ├── components/
-│   │   ├── court/          # CourtMap, ShotResultModal, OpponentShotModal
-│   │   ├── live/           # ActivePlayerSelector, QuickStatBar, LineupManager, etc.
-│   │   ├── dashboard/      # KPICard, ShootingChart
-│   │   ├── stats/          # StatsTable
-│   │   ├── layout/         # AppLayout (sidebar)
-│   │   └── ui/             # shadcn/ui primitives
-│   └── lib/                # Utilities, auth context, stat calculations
-├── api/                    # Express API server
-│   └── src/functions/
-│       ├── index.js        # All REST endpoints
-│       └── db.js           # SQLite schema & connection
-├── data/                   # SQLite database file (auto-created)
-├── scripts/seed.js         # Test data seeder
-├── docker-compose.yml      # Dev Docker setup
-├── docker-compose.prod.yml # Production Docker setup
-└── entities/               # JSON schema reference (Player, Game, Event)
+COURTSIDE keeps game-day input quick and post-game analysis close at hand. Coaches can record shots by tapping the court, make substitutions, monitor the 14-point lineup classification limit, and review player or season performance from the same local app.
+
+| During the game | After the game |
+| --- | --- |
+| Tap-to-place made and missed shots | Full box scores |
+| Assists, rebounds, steals, turnovers, blocks, fouls, and free throws | Player and season averages |
+| Five-player lineup and substitution management | Shot charts by player, team, and zone |
+| Opponent scoring and optional player tracking | Printable PDF reports |
+
+## How it fits together
+
+```mermaid
+flowchart LR
+    A[React courtside UI] -->|/api| B[Express API]
+    B --> C[(SQLite)]
+    A --> D[Charts and PDF reports]
 ```
 
-## Quick Start
+The React app uses TanStack Query for server state. Express handles the REST API, and SQLite stores players, games, and stat events in WAL mode. In Docker, Nginx serves the frontend and proxies `/api` to Express.
 
-### Prerequisites
+## Run it locally
 
-- Node.js 20+
-- npm 9+
-
-### 1. Install dependencies
+You will need Node.js 20 or newer and npm 9 or newer.
 
 ```bash
-# Frontend
+# Install frontend and API dependencies
 npm install
-
-# API
 cd api && npm install && cd ..
-```
 
-### 2. Start the API server
-
-```bash
+# Terminal 1: start the API on localhost:7071
 cd api && npm start
-```
 
-The API will start on `http://localhost:7071`. The SQLite database (`data/apex.db`) is created automatically on first run.
-
-### 3. Start the frontend dev server
-
-In a separate terminal:
-
-```bash
+# Terminal 2: start the app on localhost:5173
 npm run dev
 ```
 
-Open `http://localhost:5173`. The Vite dev server proxies `/api/*` requests to the Express API.
+Open [http://localhost:5173](http://localhost:5173).
 
-### 4. Seed test data
+### Add sample data
 
 With the API running:
 
 ```bash
-node scripts/seed.js
+npm run seed
 ```
 
-This creates 7 players, 5 games (3 completed with events, 2 upcoming), and ~126 stat events.
+The seed script adds seven anonymous players, five games, and roughly 126 stat events so every view has something useful to show.
 
-## Docker
+## Run with Docker
 
 ```bash
-# Development
+# Local build
 docker compose up --build
 
-# Production
+# Detached production-style stack
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-The app is served on port 80 via Nginx, which reverse-proxies `/api/*` to the Express container on port 7071. The SQLite database is persisted in a Docker volume.
+The Docker stack serves COURTSIDE on [http://localhost](http://localhost) and keeps the SQLite database in a named volume.
 
-## API Endpoints
+## Game-day workflow
 
-All endpoints are under `/api/`. The API uses Express.js with SQLite (better-sqlite3, WAL mode).
+1. Add the roster under **Players**.
+2. Create a game and mark it live.
+3. Set the five-player lineup.
+4. Select a player, then tap the court to record a shot.
+5. Use the quick-stat controls for the rest of the possession.
+6. Mark the game complete and review the box score, shot chart, or PDF report.
 
-### Games
+## App routes
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/games` | List all games. Query: `?sort=-date`, `?status=live` |
-| GET | `/api/games/:id` | Get single game |
-| POST | `/api/games` | Create game |
-| PUT | `/api/games/:id` | Update game (merge) |
-| DELETE | `/api/games/:id` | Delete game (cascades events) |
+| Route | Purpose |
+| --- | --- |
+| `/Games` | Schedule and game management |
+| `/LiveGame` | Courtside tracking surface |
+| `/Dashboard` | Team-level trends and KPIs |
+| `/BoxScore` | Per-game stat table |
+| `/SeasonAverages` | Aggregated season performance |
+| `/Players` | Roster management |
+| `/PlayerDetail` | Player history and shot chart |
+| `/RecruitingProfile` | Shareable player summary |
 
-### Players
+## API at a glance
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/players` | List all players. Query: `?sort=name`, `?status=active` |
-| GET | `/api/players/:id` | Get single player |
-| POST | `/api/players` | Create player |
-| PUT | `/api/players/:id` | Update player |
-| DELETE | `/api/players/:id` | Delete player |
+All endpoints live under `/api`.
 
-### Events
+| Resource | Endpoints |
+| --- | --- |
+| Games | `GET/POST /games`, `GET/PUT/DELETE /games/:id` |
+| Players | `GET/POST /players`, `GET/PUT/DELETE /players/:id` |
+| Events | `GET/POST /events`, `GET/PUT/DELETE /events/:id` |
+| Health | `GET /health` |
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/events` | List events. Query: `?game_id=x`, `?player_id=x`, `?sort=-timestamp`, `?limit=100` |
-| GET | `/api/events/:id` | Get single event |
-| POST | `/api/events` | Create event |
-| PUT | `/api/events/:id` | Update event |
-| DELETE | `/api/events/:id` | Delete event |
+List endpoints accept resource-specific filters and `?sort=field`; prefix the field with `-` for descending order. Event lists also accept `?limit=`.
 
-### Health
+## Project map
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/health` | Health check |
+```text
+.
+├── src/
+│   ├── api/          API client
+│   ├── components/   Court, lineup, charts, stats, and UI primitives
+│   ├── lib/          Auth stub, query client, and stat calculations
+│   └── pages/        Route-level screens
+├── api/
+│   └── src/functions/
+│       ├── index.js  Express routes
+│       └── db.js     SQLite schema and connection
+├── entities/         Data-model references
+├── scripts/seed.js   Anonymous sample dataset
+└── docker-compose.yml
+```
 
-## Data Model
+## Useful commands
 
-### Player
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | UUID | Auto-generated |
-| `name` | string | Full name |
-| `number` | string | Jersey number |
-| `classification` | float | IWBF wheelchair classification (1.0–4.5) |
-| `status` | `"active"` / `"bench"` | Current roster status |
-| `position` | string | Guard, Forward, Center |
-| `photo_url` | string | Optional player photo |
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start Vite with hot reload |
+| `npm run build` | Create a production frontend build |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Check JavaScript through TypeScript |
+| `npm run seed` | Load anonymous sample data into the running API |
+| `cd api && npm run dev` | Run Express in watch mode |
 
-### Game
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | UUID | Auto-generated |
-| `date` | `YYYY-MM-DD` | Game date |
-| `opponent` | string | Opponent name |
-| `location` | string | Venue |
-| `status` | `"upcoming"` / `"live"` / `"completed"` | Game state |
-| `our_score` | integer | Auburn's score |
-| `opponent_score` | integer | Opponent's score |
-| `opponent_players` | JSON array | Tracked opponent players `[{id, name, number}]` |
+## Current boundaries
 
-### Event (stat entry)
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | UUID | Auto-generated |
-| `timestamp` | ISO datetime | When it occurred |
-| `player_id` | UUID | FK → Player (or `"opponent"`) |
-| `game_id` | UUID | FK → Game |
-| `action_type` | enum | See below |
-| `points` | integer | Points scored (0 for non-scoring events) |
-| `lineup_on_court` | JSON array | 5 player IDs on court at time of event |
-| `shot_x` | float | 0–100 x-coordinate on court SVG |
-| `shot_y` | float | 0–100 y-coordinate on court SVG |
-| `shot_zone` | enum | `paint`, `mid_center`, `wing_left`, `wing_right`, `three_center`, `three_left`, `three_right` |
-| `is_opponent` | boolean | Whether this is an opponent event |
+COURTSIDE is configured for trusted local use. Authentication is represented by a stub, and the API accepts requests without user or role checks. Add authentication, authorization, API validation, restricted CORS, and an intentional data-retention policy before exposing the service to the public internet or storing a real roster on a shared server.
 
-**Action types:** `made_2pt`, `missed_2pt`, `made_3pt`, `missed_3pt`, `ft_made`, `ft_missed`, `orb`, `drb`, `ast`, `stl`, `to`, `foul`, `bs`, `tech`, `opp_made_2pt`, `opp_missed_2pt`, `opp_made_3pt`, `opp_missed_3pt`
+Player status is currently global rather than game-specific. A substitution changes that player's status across the app.
 
-## Known Issues & Future Work
+---
 
-### Current Limitations
-
-1. **No authentication** — `AuthContext` is a stub that always returns `{name: "Coach"}`. All API endpoints are open.
-2. **Player status is global** — Active/bench status is per-player, not per-game. Substituting during Game A changes the player globally.
-3. **No input validation on the API** — POST/PUT endpoints accept any JSON. Schema validation should be added at the API boundary.
-4. **`SeasonAverages` uses full page reload** for navigation (`window.location.href`) instead of React Router's `navigate()`.
-5. **`GameDetail` and `PlayerDetail` use `window.location.search`** — should use React Router `useParams()` for proper SPA routing.
-6. **Unused dependencies** — Stripe, Three.js, react-leaflet, react-quill, canvas-confetti are in `package.json` but not used. They should be removed to reduce bundle size.
-
-### Architecture Decisions
-
-- **SQLite was chosen** over Cosmos DB to eliminate Azure dependency, reduce cost, and simplify deployment. For a single-team stat tracking app, SQLite with WAL mode handles the concurrency requirements well.
-- **Proper relational schema** with indexed columns replaces the previous JSON-blob-in-SQLite approach, enabling efficient queries by `game_id`, `player_id`, and `action_type` without full table scans.
-- **Express.js** replaces Azure Functions runtime. No cloud vendor lock-in — deploy anywhere that runs Node.js.
-
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start Vite dev server (port 5173) |
-| `npm run build` | Production build |
-| `cd api && npm start` | Start Express API (port 7071) |
-| `cd api && npm run dev` | Start API with `--watch` for auto-reload |
-| `node scripts/seed.js` | Seed test data (API must be running) |
+<div align="center">
+  Built for the speed of the game: one tap, one event, no paper reconstruction afterward.
+</div>
